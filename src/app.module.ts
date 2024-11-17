@@ -4,6 +4,11 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import typeorm from './config/typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
+import { DestinationsModule } from './destinations/destinations.module';
+import { BucketListsModule } from './bucket-lists/bucket-lists.module';
+import { BucketListItemsModule } from './bucket-list-items/bucket-list-items.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -17,6 +22,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       useFactory: async (configService: ConfigService) =>
         configService.get('typeorm'),
     }),
+    UsersModule,
+    DestinationsModule,
+    BucketListsModule,
+    BucketListItemsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
