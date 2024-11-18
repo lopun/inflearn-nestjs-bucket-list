@@ -1,7 +1,13 @@
 import { registerAs } from '@nestjs/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-const config = {
+import * as dotenv from 'dotenv';
+
+dotenv.config({
+  path: `.env.${process.env.NODE_ENV || 'local'}`,
+});
+
+const config: any = {
   type: 'postgres',
   host: `${process.env.DB_HOST || 'localhost'}`,
   port: parseInt(`${process.env.DB_PORT || '5432'}`, 10),
@@ -13,6 +19,15 @@ const config = {
   autoLoadEntities: true,
   synchronize: false,
 };
+
+if (process.env.NODE_ENV === 'production') {
+  config.ssl = true;
+  config.extra = {
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  };
+}
 
 export default registerAs('typeorm', () => config);
 export const connectionSource = new DataSource(config as DataSourceOptions);
