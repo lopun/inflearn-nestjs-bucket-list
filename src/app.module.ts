@@ -10,9 +10,10 @@ import { BucketListsModule } from './bucket-lists/bucket-lists.module';
 import { BucketListItemsModule } from './bucket-list-items/bucket-list-items.module';
 import { AuthModule } from './auth/auth.module';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { JobsModule } from './jobs/jobs.module';
+import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { JobsModule } from './jobs/jobs.module';
       isGlobal: true,
     }),
     ScheduleModule.forRoot(),
+    SentryModule.forRoot(),
     UsersModule,
     DestinationsModule,
     BucketListsModule,
@@ -43,6 +45,10 @@ import { JobsModule } from './jobs/jobs.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: SentryGlobalFilter,
     },
   ],
 })
