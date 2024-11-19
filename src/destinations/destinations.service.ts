@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateDestinationDto } from './dto/create-destination.dto';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Destination } from './entities/destination.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -44,6 +44,14 @@ export class DestinationsService {
   async findById(id: number) {
     return this.destinationsRepository.findOneBy({
       id,
+    });
+  }
+
+  async search(q: string): Promise<Destination[]> {
+    return this.destinationsRepository.find({
+      where: {
+        name: Like(`%${q}%`),
+      },
     });
   }
 
