@@ -11,6 +11,8 @@ import { BucketListItemsModule } from './bucket-list-items/bucket-list-items.mod
 import { AuthModule } from './auth/auth.module';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -27,11 +29,13 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     CacheModule.register({
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     UsersModule,
     DestinationsModule,
     BucketListsModule,
     BucketListItemsModule,
     AuthModule,
+    JobsModule,
   ],
   controllers: [AppController],
   providers: [
