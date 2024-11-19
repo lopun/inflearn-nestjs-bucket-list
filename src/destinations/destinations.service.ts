@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -7,12 +8,15 @@ import { CreateDestinationDto } from './dto/create-destination.dto';
 import { Like, Repository } from 'typeorm';
 import { Destination } from './entities/destination.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class DestinationsService {
   constructor(
     @InjectRepository(Destination)
     private readonly destinationsRepository: Repository<Destination>,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   // 2.	**여행지 등록 API** - 새로운 여행지 등록 API 구현 (POST /destinations)
@@ -48,7 +52,13 @@ export class DestinationsService {
   }
 
   async search(q: string): Promise<Destination[]> {
-    return this.destinationsRepository.find({
+    // const cachedResult: any = await this.cacheManager.get(`search-${q}`);
+
+    // if (cachedResult) {
+    //   return cachedResult;
+    // }
+
+    const result = await this.destinationsRepository.find({
       where: [
         {
           name: Like(`%${q}%`),
@@ -58,6 +68,10 @@ export class DestinationsService {
         },
       ],
     });
+
+    // await this.cacheManager.set(`search-${q}`, result, 1000 * 10);
+
+    return result;
   }
 
   // 5.	**여행지 삭제 API** - 특정 여행지 삭제 API 구현 (DELETE /destinations/:id)
